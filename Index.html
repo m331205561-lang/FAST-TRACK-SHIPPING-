@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FastTrack Shipping</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 0; background-color: #f4f6f8; }
+header { background-color: #0b5ed7; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+nav a { color: white; margin-left: 20px; text-decoration: none; font-weight: bold; }
+nav a:hover { text-decoration: underline; }
+.container { max-width: 1100px; margin: 30px auto; padding: 20px; background: white; border-radius: 8px; }
+h2 { color: #0b5ed7; }
+form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+label { font-weight: bold; }
+input, select { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
+.full { grid-column: span 2; }
+button { background-color: #0b5ed7; color: white; padding: 12px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
+button:hover { background-color: #084298; }
+footer { background-color: #222; color: white; text-align: center; padding: 15px; margin-top: 40px; }
+.contact-bar { background-color: #084298; color: white; display: flex; justify-content: space-around; padding: 10px; font-size: 14px; position: sticky; top: 0; z-index: 1000; }
+.contact-bar span, .contact-bar a { display: flex; align-items: center; gap: 5px; color: white; text-decoration: none; font-weight: bold; }
+.contact-bar a:hover { text-decoration: underline; }
+.map-container { margin-top: 15px; border-radius: 8px; overflow: hidden; }
+.status { font-weight: bold; color: green; }
+</style>
+</head>
+<body>
+
+<header>
+<h1>FastTrack Shipping</h1>
+<nav>
+<a href="#">Home</a>
+<a href="#track">Track Cargo</a>
+<a href="#services">Services</a>
+<a href="#contact">Contact</a>
+<a href="#branches">Branches</a>
+</nav>
+</header>
+
+<div class="contact-bar">
+<span>📞 +254 748 285 136</span>
+<span>✉️ info@fasttrackshipping.com</span>
+<span>📍 Nairobi, Kenya</span>
+<a href="#map">🗺️ Get Directions</a>
+</div>
+
+<div class="container" id="track">
+<h2>Cargo Tracking & Shipping Details</h2>
+<form id="shipment-form">
+<div class="full">
+<label>Tracking Code</label>
+<input type="text" placeholder="Enter tracking number">
+</div>
+<div>
+<label>Sender Name</label>
+<input type="text" placeholder="Sender full name">
+</div>
+<div>
+<label>Sender Code</label>
+<input type="text" placeholder="Sender ID code">
+</div>
+<div>
+<label>Recipient Name</label>
+<input type="text" placeholder="Recipient full name">
+</div>
+<div>
+<label>Recipient Code</label>
+<input type="text" placeholder="Recipient ID code">
+</div>
+<div>
+<label>Type of Cargo</label>
+<select>
+<option>Documents</option>
+<option>Electronics</option>
+<option>Clothing</option>
+<option>Food Items</option>
+<option>Heavy Equipment</option>
+</select>
+</div>
+<div>
+<label>Cargo Code</label>
+<input type="text" placeholder="Cargo code">
+</div>
+<div>
+<label>Recipient Email</label>
+<input type="email" placeholder="Enter recipient email">
+</div>
+<div>
+<label>Recipient Phone</label>
+<input type="text" placeholder="Enter recipient phone">
+</div>
+<div class="full">
+<button type="submit">Track / Submit Shipment</button>
+</div>
+</form>
+<div class="full">
+<p>Status: <span class="status" id="real-time-status">Not Dispatched</span></p>
+</div>
+</div>
+
+<div class="container" id="branches">
+<h2>Our Branch Locations</h2>
+<ul>
+<li><a href="https://www.google.com/maps?q=Nairobi,Kenya" target="_blank">Nairobi Branch</a></li>
+<li><a href="https://www.google.com/maps?q=Mombasa,Kenya" target="_blank">Mombasa Branch</a></li>
+<li><a href="https://www.google.com/maps?q=Kisumu,Kenya" target="_blank">Kisumu Branch</a></li>
+<li><a href="https://www.google.com/maps?q=Eldoret,Kenya" target="_blank">Eldoret Branch</a></li>
+</ul>
+</div>
+
+<div class="container" id="map">
+<h2>Our Location</h2>
+<p>Find us and track your delivery route below:</p>
+<div class="map-container">
+<iframe id="google-map"
+src="https://www.google.com/maps?q=Nairobi,Kenya&output=embed"
+width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+</div>
+</div>
+
+<div class="container" id="contact">
+<h2>Contact Us</h2>
+<form class="contact-form">
+<div>
+<label>Your Name</label>
+<input type="text" placeholder="Enter your name" required>
+</div>
+<div>
+<label>Your Email</label>
+<input type="email" placeholder="Enter your email" required>
+</div>
+<div class="full">
+<label>Message</label>
+<input type="text" placeholder="Type your message here" required>
+</div>
+<div class="full">
+<button type="submit">Send Message</button>
+</div>
+</form>
+</div>
+
+<footer>
+<p>&copy; 2026 FastTrack Shipping. All Rights Reserved.</p>
+</footer>
+
+<script>
+let shipments = JSON.parse(localStorage.getItem('shipments')) || [];
+function saveShipment(data) {
+shipments.push(data);
+localStorage.setItem('shipments', JSON.stringify(shipments));
+}
+function findShipment(code) {
+return shipments.find(s => s.trackingCode === code);
+}
+const mainForm = document.getElementById('shipment-form');
+const statusLabel = document.getElementById('real-time-status');
+
+mainForm.addEventListener('submit', function(e) {
+e.preventDefault();
+const data = {
+trackingCode: mainForm.querySelector('input[placeholder="Enter tracking number"]').value,
+sender: mainForm.querySelector('input[placeholder="Sender full name"]').value,
+recipient: mainForm.querySelector('input[placeholder="Recipient full name"]').value,
+recipientEmail: mainForm.querySelector('input[placeholder="Enter recipient email"]').value,
+recipientPhone: mainForm.querySelector('input[placeholder="Enter recipient phone"]').value,
+cargoType: mainForm.querySelector('select').value,
+cargoCode: mainForm.querySelector('input[placeholder="Cargo code"]').value,
+status: 'Dispatched'
+};
+saveShipment(data);
+alert('Shipment dispatched successfully!');
+mainForm.reset();
+statusLabel.textContent = data.status;
+
+// Update map with delivery route
+const mapIframe = document.getElementById('google-map');
+mapIframe.src = `https://www.google.com/maps/dir/?api=1&destination=${data.recipient.replace(/ /g,'+')}`;
+
+// Send email notification (requires PHP backend)
+fetch('sendEmail.php', {
+method: 'POST',
+headers: {'Content-Type':'application/json'},
+body: JSON.stringify({
+email: data.recipientEmail,
+name: data.recipient,
+tracking: data.trackingCode,
+status: data.status
+})
+});
+
+// Send SMS notification (requires PHP backend)
+fetch('sendSMS.php', {
+method: 'POST',
+headers: {'Content-Type':'application/json'},
+body: JSON.stringify({
+phone: data.recipientPhone,
+message: `Hello ${data.recipient}, your shipment ${data.trackingCode} status is now ${data.status}`
+})
+});
+});
+
+function track() {
+const code = prompt('Enter tracking code to view route:');
+const shipment = findShipment(code);
+if (!shipment) { alert('No shipment found'); return; }
+alert(`Tracking ${shipment.trackingCode} to ${shipment.recipient}`);
+statusLabel.textContent = shipment.status;
+const mapIframe = document.getElementById('google-map');
+mapIframe.src = `https://www.google.com/maps/dir/?api=1&destination=${shipment.recipient.replace(/ /g,'+')}`;
+}
+</script>
+
+</body>
+</html>
